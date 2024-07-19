@@ -121,6 +121,10 @@ function renderChart(data) {
             d3.select(this).attr('r', 5);
             d3.select(`#text-${d.data.name.replace(/\s+/g, '-')}`).style('display', 'inline');
             d3.select('#tooltip').style('display', 'none');
+        })
+        .on('click', function(event, d) {
+            document.getElementById('search-bar').value = d.data.name;
+            updateChart(); // Trigger the search and update the chart
         });
 
     svg.selectAll('text')
