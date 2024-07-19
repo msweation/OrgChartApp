@@ -19,6 +19,26 @@ document.getElementById('toggle-inactive').addEventListener('change', () => {
     updateChart();
 });
 
+document.getElementById('refresh-button').addEventListener('click', () => {
+    document.getElementById('loading-indicator').style.display = 'block';
+    fetch('/refresh_data')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('loading-indicator').style.display = 'none';
+            if (data.success) {
+                alert('Data refreshed successfully');
+            } else {
+                alert('Error refreshing data');
+            }
+        })
+        .catch(error => {
+            document.getElementById('loading-indicator').style.display = 'none';
+            console.error('Error refreshing data:', error);
+            alert('An error occurred while refreshing the data.');
+        });
+});
+
+
 window.addEventListener('popstate', (event) => {
     if (event.state && event.state.searchTerm) {
         document.getElementById('search-bar').value = event.state.searchTerm;

@@ -9,11 +9,12 @@
 </head>
 <body>
     <div id="tool-bar">
-        <input type="text" id="search-bar" placeholder="Search for a name">
-        <button id="search-button">Search</button>
-        <label id="checkbox-label">
-            <input type="checkbox" id="toggle-inactive"> Show Inactive Reps
+        <input type="text" id="search-bar" placeholder="Search for a name" class="clickable">
+        <button id="search-button" class="clickable">Search</button>
+        <label>
+            <input type="checkbox" id="toggle-inactive" class="clickable"> Show Inactive Reps
         </label>
+        <button id="refresh-button" class="clickable">Refresh Data</button>
     </div>
     <div id="loading-indicator" style="display: none;">Loading...</div>
     <div id="chart"></div>

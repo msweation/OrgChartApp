@@ -29,6 +29,7 @@ body {
     border: 1px solid #ccc;
     margin-right: 10px;
     width: 250px;
+    cursor: text;
 }
 
 #search-button {
@@ -86,3 +87,6 @@ svg:active {
     user-select: none;
 }
 
+.clickable {
+    cursor: pointer;
+}

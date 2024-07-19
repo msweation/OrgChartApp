@@ -1,7 +1,7 @@
 from flask import request, jsonify, current_app as app, redirect, url_for, Response, render_template
 import pandas as pd
 import os
-from .utils import build_hierarchy, convert_booleans_to_strings
+from .utils import build_hierarchy, convert_booleans_to_strings, refresh_data
 import json
 
 @app.route('/')
@@ -127,3 +127,9 @@ def get_org_chart():
 
     print("No matching node found")
     return jsonify(None)
+
+
+@app.route('/refresh_data')
+def refresh_data_route():
+    result = refresh_data(app.config['UPLOAD_FOLDER'])
+    return jsonify(result)
