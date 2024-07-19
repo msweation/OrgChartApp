@@ -20,19 +20,19 @@ document.getElementById('toggle-inactive').addEventListener('change', () => {
 });
 
 document.getElementById('refresh-button').addEventListener('click', () => {
-    document.getElementById('loading-indicator').style.display = 'block';
+    document.getElementById('loader-overlay').style.display = 'flex';
     fetch('/refresh_data')
         .then(response => response.json())
         .then(data => {
-            document.getElementById('loading-indicator').style.display = 'none';
+            document.getElementById('loader-overlay').style.display= 'none';
             if (data.success) {
-                alert('Data refreshed successfully');
+                console.log('Data refreshed successfully');
             } else {
                 alert('Error refreshing data');
             }
         })
         .catch(error => {
-            document.getElementById('loading-indicator').style.display = 'none';
+            dodocument.getElementById('loader-overlay').style.display = 'none';
             console.error('Error refreshing data:', error);
             alert('An error occurred while refreshing the data.');
         });

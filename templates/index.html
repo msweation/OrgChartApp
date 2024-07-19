@@ -9,14 +9,21 @@
 </head>
 <body>
     <div id="tool-bar">
-        <input type="text" id="search-bar" placeholder="Search for a name" class="clickable">
-        <button id="search-button" class="clickable">Search</button>
-        <label>
-            <input type="checkbox" id="toggle-inactive" class="clickable"> Show Inactive Reps
-        </label>
+        <div id="search-container">
+            <input type="text" id="search-bar" placeholder="Search for a name" class="clickable">
+            <button id="search-button" class="clickable">Search</button>
+            <label>
+                <input type="checkbox" id="toggle-inactive" class="clickable"> Show Inactive Reps
+            </label>
+        </div>
         <button id="refresh-button" class="clickable">Refresh Data</button>
     </div>
-    <div id="loading-indicator" style="display: none;">Loading...</div>
+    <div id="loader-overlay">
+        <div id="loader-overlay-items">
+            <div id="loader-overlay-text">Please wait while the data refreshes</div>
+            <div id="loading-indicator" class="loader"></div>
+        </div>
+    </div>
     <div id="chart"></div>
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 </body>
