@@ -124,6 +124,7 @@ function renderChart(data) {
         .attr('fill', d => d.data.active ? '#69b3a2' : '#ff0000')
         .on('mouseover', function(event, d) {
             d3.select(this).attr('r', 10);
+            d3.select(this).style('cursor','pointer')
             d3.select(`#text-${d.data.name.replace(/\s+/g, '-')}`).style('display', 'none');
             const info = `Name: ${d.data.name}<br>Active: ${d.data.active}<br>Total Sales: ${d.data.sales}`;
             d3.select('#tooltip')
