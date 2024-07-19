@@ -1,26 +1,86 @@
-document.getElementById('file-input').addEventListener('change', function() {
+/*document.getElementById('file-input').addEventListener('change', function() {
     const file = this.files[0];
     if (file) {
+        document.getElementById('loading-indicator').style.display = 'block'; // Show loading indicator
         const formData = new FormData();
         formData.append('file', file);
         fetch('/upload', {
             method: 'POST',
             body: formData
-        }).then(response => response.json()).then(data => {
-            renderChart(data);
+        }).then(response => {
+            if (response.redirected) {
+                window.location.href = response.url;
+            }
+        }).finally(() => {
+            document.getElementById('loading-indicator').style.display = 'none'; // Hide loading indicator
         });
+    }
+});*/
+
+let currentSearch;
+
+document.getElementById('search-button').addEventListener('click', () => {
+    updateChart();
+});
+
+document.getElementById('search-bar').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        updateChart();
     }
 });
 
+document.getElementById('toggle-inactive').addEventListener('change', () => {
+    const searchTerm = document.getElementById('search-bar').value.toLowerCase();
+
+    if (searchTerm !== currentSearch) {
+        return;
+    }
+    updateChart();
+});
+
+function updateChart() {
+    const searchTerm = document.getElementById('search-bar').value.toLowerCase();
+    currentSearch = searchTerm;
+    const showInactive = document.getElementById('toggle-inactive').checked;
+
+    // Fetch the org chart data with the current filters
+    fetch(`/get_org_chart?search=${searchTerm}&showInactive=${showInactive}`)
+        .then(response => response.json())
+        .then(data => {
+            if (!data) {
+                //alert('No data found');
+                return;
+            }
+            console.log('Data found: ',data);
+            renderChart(data);
+        })
+        .catch(error => {
+            console.error('Error fetching org chart data:', error);
+            alert('An error occurred while fetching the data.');
+        });
+}
+
 function renderChart(data) {
+    // Clear any existing chart
+    console.log('Attempting to load chart for data: ',data);
+    d3.select('#chart').html('');
+
     const width = document.getElementById('chart').clientWidth;
     const height = document.getElementById('chart').clientHeight;
+    const padding = 10;
+
     const svg = d3.select('#chart').append('svg')
         .attr('width', width)
-        .attr('height', height);
+        .attr('height', height)
+        .call(d3.zoom().on('zoom', (event) => {
+            svg.attr('transform', event.transform);
+            //svg.selectAll('text').attr('font-size',12 / event.transform.k);
+        }))
+        .append('g');
 
-    const root = d3.hierarchy(data[0]);
-    const treeLayout = d3.tree().size([width, height]);
+    const root = d3.hierarchy(data);
+
+    const treeLayout = d3.tree().size([width, height - padding]);
     treeLayout(root);
 
     svg.selectAll('line')
@@ -28,41 +88,54 @@ function renderChart(data) {
         .enter()
         .append('line')
         .attr('x1', d => d.source.x)
-        .attr('y1', d => d.source.y)
+        .attr('y1', d => d.source.y + padding)
         .attr('x2', d => d.target.x)
-        .attr('y2', d => d.target.y)
+        .attr('y2', d => d.target.y + padding)
         .attr('stroke', '#ccc');
 
-    svg.selectAll('circle')
+    const nodes = svg.selectAll('circle')
         .data(root.descendants())
         .enter()
         .append('circle')
         .attr('cx', d => d.x)
-        .attr('cy', d => d.y)
+        .attr('cy', d => d.y + padding)
         .attr('r', 5)
-        .attr('fill', '#69b3a2');
+        .attr('fill', d => d.data.active ? '#69b3a2' : '#ff0000')
+        .on('mouseover', function(event, d) {
+            d3.select(this).attr('r', 10);
+            d3.select(`#text-${d.data.name.replace(/\s+/g, '-')}`).style('display', 'none');
+            const info = `Name: ${d.data.name}<br>Active: ${d.data.active}<br>Total Sales: ${d.data.sales}`;
+            d3.select('#tooltip')
+                .style('left', `${event.pageX + 10}px`)
+                .style('top', `${event.pageY + 10}px`)
+                .style('display', 'inline-block')
+                .html(info);
+        })
+        .on('mouseout', function(event, d) {
+            d3.select(this).attr('r', 5);
+            d3.select(`#text-${d.data.name.replace(/\s+/g, '-')}`).style('display', 'inline');
+            d3.select('#tooltip').style('display', 'none');
+        });
 
     svg.selectAll('text')
         .data(root.descendants())
         .enter()
         .append('text')
         .attr('x', d => d.x)
-        .attr('y', d => d.y - 10)
+        .attr('y', d => d.y + 15 + padding)
         .attr('text-anchor', 'middle')
-        .text(d => d.data.name);
+        .attr('font-size',12)
+        .attr('id', d => `text-${d.data.name.replace(/\s+/g, '-')}`)
+        .attr('class','sale-num')
+        .text(d => `${d.data.sales}`);
 }
 
-document.getElementById('search-bar').addEventListener('input', function() {
-    const searchTerm = this.value.toLowerCase();
-    const nodes = d3.selectAll('text').filter(d => d.data.name.toLowerCase().includes(searchTerm));
-    
-    d3.selectAll('text').attr('fill', '#000');
-    d3.selectAll('circle').attr('fill', '#69b3a2');
-
-    if (searchTerm) {
-        nodes.attr('fill', 'red');
-        nodes.each(function(d) {
-            d3.select(`circle[cx="${d.x}"][cy="${d.y}"]`).attr('fill', 'red');
-        });
-    }
-});
+// Create a tooltip div element for showing node information on hover
+d3.select('body').append('div')
+    .attr('id', 'tooltip')
+    .style('position', 'absolute')
+    .style('padding', '10px')
+    .style('background', 'rgba(0, 0, 0, 0.7)')
+    .style('color', 'white')
+    .style('border-radius', '5px')
+    .style('display', 'none');

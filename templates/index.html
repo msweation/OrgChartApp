@@ -8,24 +8,15 @@
     <script src="https://d3js.org/d3.v6.min.js"></script>
 </head>
 <body>
-    <input type="file" id="file-input">
+    <div id="tool-bar">
+        <input type="text" id="search-bar" placeholder="Search for a name">
+        <button id="search-button">Search</button>
+        <label>
+            <input type="checkbox" id="toggle-inactive"> Show Inactive Reps
+        </label>
+    </div>
+    <div id="loading-indicator" style="display: none;">Loading...</div>
     <div id="chart"></div>
-    <script>
-        document.getElementById('file-input').addEventListener('change', function() {
-            const file = this.files[0];
-            if (file) {
-                const formData = new FormData();
-                formData.append('file', file);
-                fetch('/upload', {
-                    method: 'POST',
-                    body: formData
-                }).then(response => {
-                    if (response.redirected) {
-                        window.location.href = response.url;
-                    }
-                });
-            }
-        });
-    </script>
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 </body>
 </html>

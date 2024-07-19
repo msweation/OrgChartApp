@@ -1,0 +1,29 @@
+/* Add any styles you need here */
+body {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#tool-bar {
+    position: fixed;
+    top: 0;
+}
+
+#loading-indicator {
+    font-size: 20px;
+    font-weight: bold;
+    color: red;
+}
+
+#chart {
+    width: 90%;
+    height: 80%;
+}
+
+.sale-num {
+    pointer-events: none;
+    cursor: pointer;
+}
