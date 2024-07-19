@@ -1,0 +1,103 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+.Python
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environment
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# Environments
+.env
+.env.local
+.env.production
+.env.testing
+.env.stage
+
+# Flask settings
+instance/
+.webassets-cache
+
+# BigQuery credentials
+credentials.json
+
+# IPython
+profile_default/
+ipython_config.py
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# PyCharm
+.idea/
+
+# VS Code
+.vscode/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+*.stackdump
+
+# Linux
+*.lock
+
+# Other
+logs/
+*.log
