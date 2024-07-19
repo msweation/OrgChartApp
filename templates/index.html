@@ -9,8 +9,23 @@
 </head>
 <body>
     <input type="file" id="file-input">
-    <input type="text" id="search-bar" placeholder="Search...">
     <div id="chart"></div>
-    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+    <script>
+        document.getElementById('file-input').addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const formData = new FormData();
+                formData.append('file', file);
+                fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                }).then(response => {
+                    if (response.redirected) {
+                        window.location.href = response.url;
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>
