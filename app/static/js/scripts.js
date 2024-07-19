@@ -69,6 +69,12 @@ function renderChart(data) {
     const height = document.getElementById('chart').clientHeight;
     const padding = 10;
 
+    const firstLevelChildren = data.children ? data.children.length : 0;
+
+    const treeWidthAdjustment = (firstLevelChildren*10)+10;
+
+    console.log(firstLevelChildren);
+
     const svg = d3.select('#chart').append('svg')
         .attr('width', width)
         .attr('height', height)
@@ -80,16 +86,16 @@ function renderChart(data) {
 
     const root = d3.hierarchy(data);
 
-    const treeLayout = d3.tree().size([width, height - padding]);
+    const treeLayout = d3.tree().size([width+treeWidthAdjustment, height - padding]);
     treeLayout(root);
 
     svg.selectAll('line')
         .data(root.links())
         .enter()
         .append('line')
-        .attr('x1', d => d.source.x)
+        .attr('x1', d => d.source.x - (treeWidthAdjustment/2))
         .attr('y1', d => d.source.y + padding)
-        .attr('x2', d => d.target.x)
+        .attr('x2', d => d.target.x - (treeWidthAdjustment/2))
         .attr('y2', d => d.target.y + padding)
         .attr('stroke', '#ccc');
 
@@ -97,7 +103,7 @@ function renderChart(data) {
         .data(root.descendants())
         .enter()
         .append('circle')
-        .attr('cx', d => d.x)
+        .attr('cx', d => d.x - (treeWidthAdjustment/2))
         .attr('cy', d => d.y + padding)
         .attr('r', 5)
         .attr('fill', d => d.data.active ? '#69b3a2' : '#ff0000')
@@ -121,7 +127,7 @@ function renderChart(data) {
         .data(root.descendants())
         .enter()
         .append('text')
-        .attr('x', d => d.x)
+        .attr('x', d => d.x - (treeWidthAdjustment/2))
         .attr('y', d => d.y + 15 + padding)
         .attr('text-anchor', 'middle')
         .attr('font-size',12)
