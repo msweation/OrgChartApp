@@ -38,6 +38,23 @@ document.getElementById('refresh-button').addEventListener('click', () => {
         });
 });
 
+document.getElementById('logout-button').addEventListener('click', function() {
+    fetch('/auth/logout', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }).then(response => {
+        if (response.redirected) {
+            window.location.href = response.url;
+        }
+    });
+});
+
+document.getElementById('change-password-button').addEventListener('click', function() {
+    window.location.href = '/auth/change_password';
+});
+
 
 window.addEventListener('popstate', (event) => {
     if (event.state && event.state.searchTerm) {

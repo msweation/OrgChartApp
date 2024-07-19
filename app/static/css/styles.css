@@ -62,6 +62,38 @@ body {
     cursor: pointer;
 }
 
+#logout-button {
+    padding: 6px 12px;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    background-color: #ba4040;
+    color: white;
+    cursor: pointer;
+    position: absolute; /* Position it absolutely within the toolbar */
+    left: 5%; /* Position it 10px from the left edge */
+}
+
+#logout-button:hover {
+    background-color: #b83434;
+}
+
+#change-password-button {
+    padding: 6px 12px;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    background-color: #16959c;
+    color: white;
+    cursor: pointer;
+    position: absolute; /* Position it absolutely within the toolbar */
+    left: 25%; /* Position it 10px from the left edge */
+}
+
+#change-password-button:hover {
+    background-color: #12767b;
+}
+
 #refresh-button {
     padding: 6px 12px;
     font-size: 16px;
@@ -71,7 +103,7 @@ body {
     color: white;
     cursor: pointer;
     position: absolute; /* Position it absolutely within the toolbar */
-    right: 10px; /* Position it 10px from the right edge */
+    right: 5%; /* Position it 10px from the right edge */
 }
 
 #refresh-button:hover {
@@ -136,7 +168,6 @@ svg:active {
     justify-content: center;
 }
 
-/* HTML: <div class="loader"></div> */
 .loader {
     width: 50px;
     padding: 8px;
@@ -151,8 +182,9 @@ svg:active {
     -webkit-mask-composite: source-out;
             mask-composite: subtract;
     animation: l3 1s infinite linear;
-  }
-  @keyframes l3 {to{transform: rotate(1turn)}}
+}
+
+@keyframes l3 {to{transform: rotate(1turn)}}
 
 #loader-overlay-text {
     font-size: 24px;

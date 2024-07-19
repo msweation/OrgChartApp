@@ -4,11 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Org Chart</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ css_path }}">
     <script src="https://d3js.org/d3.v6.min.js"></script>
 </head>
 <body>
     <div id="tool-bar">
+        <div id="logout-button" class="clickable">Log Out</div>
+        <div id="change-password-button" class="clickable">Change Password</div>
         <div id="search-container">
             <input type="text" id="search-bar" placeholder="Search for a name" class="clickable">
             <button id="search-button" class="clickable">Search</button>
@@ -25,6 +27,6 @@
         </div>
     </div>
     <div id="chart"></div>
-    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+    <script src="{{ js_path }}"></script>
 </body>
 </html>

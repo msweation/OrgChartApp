@@ -1,0 +1,116 @@
+/* Add any styles you need here */
+body {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f4f4f9;
+    font-family: Arial, sans-serif;
+    margin: 0;
+}
+
+#sign-in-container {
+    width: 300px;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+#sign-in-container h2 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+#sign-in-container form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#sign-in-container label {
+    width: 100%;
+    text-align: left;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+#sign-in-container input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+#sign-in-container button {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+}
+
+#sign-in-container button:hover {
+    background-color: #0056b3;
+}
+
+
+#change-password-container {
+    width: 300px;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+#change-password-container h2 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+#change-password-container form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#change-password-container label {
+    width: 100%;
+    text-align: left;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+#change-password-container input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+#change-password-container button {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+}
+
+#change-password-container button:hover {
+    background-color: #0056b3;
+}

@@ -1,31 +1,40 @@
+# routes.py
 from flask import request, jsonify, current_app as app, redirect, url_for, Response, render_template
+from flask_login import login_required
 import pandas as pd
 import os
 from .utils import build_hierarchy, convert_booleans_to_strings, refresh_data
 import json
 
-@app.route('/')
-@app.route('/search')
-@app.route('/search/<search_term>')
-def index(search_term=None):
-    index_path = os.path.join(os.getcwd(), 'templates', 'index.html')
+def render_template_with_paths(template_name, **context):
+    template_path = os.path.join(os.getcwd(), 'templates', template_name)
     css_path = url_for('static', filename='css/styles.css')
     js_path = url_for('static', filename='js/scripts.js')
-    print(f"Rendering index.html from: {index_path}")
+    print(f"Rendering {template_name} from: {template_path}")
     print(f"CSS path: {css_path}")
     print(f"JS path: {js_path}")
     try:
-        with open(index_path) as file:
+        with open(template_path) as file:
             content = file.read()
         # Manually inject the paths into the content
-        content = content.replace('{{ url_for(\'static\', filename=\'css/styles.css\') }}', css_path)
-        content = content.replace('{{ url_for(\'static\', filename=\'js/scripts.js\') }}', js_path)
+        content = content.replace('{{ css_path }}', css_path)
+        content = content.replace('{{ js_path }}', js_path)
+        for key, value in context.items():
+            content = content.replace(f'{{{{ {key} }}}}', value)
         return Response(content, mimetype='text/html')
     except Exception as e:
-        print(f"Error rendering index.html: {e}")
+        print(f"Error rendering {template_name}: {e}")
         return str(e)
 
+@app.route('/')
+@app.route('/search')
+@app.route('/search/<search_term>')
+@login_required
+def index(search_term=None):
+    return render_template_with_paths('index.html', sign_in_url=url_for('auth.signin'))
+
 @app.route('/upload', methods=['POST'])
+@login_required
 def upload_file():
     if 'file' not in request.files:
         return jsonify({'error': 'No file part'})
@@ -46,6 +55,7 @@ def upload_file():
         return redirect(url_for('view_json'))
 
 @app.route('/view_json')
+@login_required
 def view_json():
     view_json_path = os.path.join(os.getcwd(), 'templates', 'view_json.html')
     json_filepath = os.path.join(app.config['UPLOAD_FOLDER'], 'org_chart.json')
@@ -61,6 +71,7 @@ def view_json():
         return str(e)
 
 @app.route('/get_org_chart')
+@login_required
 def get_org_chart():
     search = request.args.get('search', '').lower()
     show_inactive = request.args.get('showInactive', 'false').lower() == 'true'
@@ -128,8 +139,8 @@ def get_org_chart():
     print("No matching node found")
     return jsonify(None)
 
-
 @app.route('/refresh_data')
+@login_required
 def refresh_data_route():
     result = refresh_data(app.config['UPLOAD_FOLDER'])
     return jsonify(result)
