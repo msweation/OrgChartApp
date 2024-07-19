@@ -1,11 +1,13 @@
-from flask import request, jsonify, current_app as app, redirect, url_for, Response
+from flask import request, jsonify, current_app as app, redirect, url_for, Response, render_template
 import pandas as pd
 import os
 from .utils import build_hierarchy, convert_booleans_to_strings
 import json
 
 @app.route('/')
-def index():
+@app.route('/search')
+@app.route('/search/<search_term>')
+def index(search_term=None):
     index_path = os.path.join(os.getcwd(), 'templates', 'index.html')
     css_path = url_for('static', filename='css/styles.css')
     js_path = url_for('static', filename='js/scripts.js')
@@ -92,7 +94,6 @@ def get_org_chart():
                 return False
             return True
 
-
         def apply_filter(n):
             children = n.get('children', [])
             filtered_children = [apply_filter(child) for child in children if filter_chart(child)]
@@ -122,10 +123,7 @@ def get_org_chart():
             node_count = count_nodes(filtered_chart) - 1  # Exclude the searched node itself
             print(f"Number of nodes attached to the searched node: {node_count}")
             
-            #print(f"Filtered chart: {json.dumps(filtered_chart, indent=2)}")
             return jsonify(filtered_chart)
 
     print("No matching node found")
     return jsonify(None)
-
-

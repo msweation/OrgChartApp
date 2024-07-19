@@ -1,22 +1,3 @@
-/*document.getElementById('file-input').addEventListener('change', function() {
-    const file = this.files[0];
-    if (file) {
-        document.getElementById('loading-indicator').style.display = 'block'; // Show loading indicator
-        const formData = new FormData();
-        formData.append('file', file);
-        fetch('/upload', {
-            method: 'POST',
-            body: formData
-        }).then(response => {
-            if (response.redirected) {
-                window.location.href = response.url;
-            }
-        }).finally(() => {
-            document.getElementById('loading-indicator').style.display = 'none'; // Hide loading indicator
-        });
-    }
-});*/
-
 let currentSearch;
 
 document.getElementById('search-button').addEventListener('click', () => {
@@ -38,20 +19,43 @@ document.getElementById('toggle-inactive').addEventListener('change', () => {
     updateChart();
 });
 
+window.addEventListener('popstate', (event) => {
+    if (event.state && event.state.searchTerm) {
+        document.getElementById('search-bar').value = event.state.searchTerm;
+        const showInactive = document.getElementById('toggle-inactive').checked;
+        fetch(`/get_org_chart?search=${event.state.searchTerm}&showInactive=${showInactive}`)
+            .then(response => response.json())
+            .then(data => {
+                if (!data) {
+                    alert('No data found');
+                    return;
+                }
+                renderChart(data);
+            })
+            .catch(error => {
+                console.error('Error fetching org chart data:', error);
+                alert('An error occurred while fetching the data.');
+            });
+    }
+});
+
 function updateChart() {
     const searchTerm = document.getElementById('search-bar').value.toLowerCase();
     currentSearch = searchTerm;
     const showInactive = document.getElementById('toggle-inactive').checked;
+
+    // Update the URL
+    const newUrl = `/search/${searchTerm.replace(/\s+/g, '-')}`;
+    history.pushState({ searchTerm }, '', newUrl);
 
     // Fetch the org chart data with the current filters
     fetch(`/get_org_chart?search=${searchTerm}&showInactive=${showInactive}`)
         .then(response => response.json())
         .then(data => {
             if (!data) {
-                //alert('No data found');
+                alert('No data found');
                 return;
             }
-            console.log('Data found: ',data);
             renderChart(data);
         })
         .catch(error => {
@@ -62,7 +66,7 @@ function updateChart() {
 
 function renderChart(data) {
     // Clear any existing chart
-    console.log('Attempting to load chart for data: ',data);
+    console.log('Attempting to load chart for data: ', data);
     d3.select('#chart').html('');
 
     const width = document.getElementById('chart').clientWidth;
@@ -71,7 +75,19 @@ function renderChart(data) {
 
     const firstLevelChildren = data.children ? data.children.length : 0;
 
-    const treeWidthAdjustment = (firstLevelChildren*10)+10;
+    const getNodeLevels = (node) => {
+        if (!node.children || node.children.length === 0) {
+            return 0;
+        }
+        const childLevels = node.children.map(getNodeLevels);
+        return 1 + Math.max(...childLevels);
+    };
+
+    const totalLevels = getNodeLevels(data);
+
+    console.log('Total node levels: ',totalLevels)
+
+    const treeWidthAdjustment = (firstLevelChildren * 10) + 10;
 
     console.log(firstLevelChildren);
 
@@ -80,22 +96,21 @@ function renderChart(data) {
         .attr('height', height)
         .call(d3.zoom().on('zoom', (event) => {
             svg.attr('transform', event.transform);
-            //svg.selectAll('text').attr('font-size',12 / event.transform.k);
         }))
         .append('g');
 
     const root = d3.hierarchy(data);
 
-    const treeLayout = d3.tree().size([width+treeWidthAdjustment, height - padding]);
+    const treeLayout = d3.tree().size([width + treeWidthAdjustment, height - padding]);
     treeLayout(root);
 
     svg.selectAll('line')
         .data(root.links())
         .enter()
         .append('line')
-        .attr('x1', d => d.source.x - (treeWidthAdjustment/2))
+        .attr('x1', d => d.source.x - (treeWidthAdjustment / 2))
         .attr('y1', d => d.source.y + padding)
-        .attr('x2', d => d.target.x - (treeWidthAdjustment/2))
+        .attr('x2', d => d.target.x - (treeWidthAdjustment / 2))
         .attr('y2', d => d.target.y + padding)
         .attr('stroke', '#ccc');
 
@@ -103,7 +118,7 @@ function renderChart(data) {
         .data(root.descendants())
         .enter()
         .append('circle')
-        .attr('cx', d => d.x - (treeWidthAdjustment/2))
+        .attr('cx', d => d.x - (treeWidthAdjustment / 2))
         .attr('cy', d => d.y + padding)
         .attr('r', 5)
         .attr('fill', d => d.data.active ? '#69b3a2' : '#ff0000')
@@ -124,19 +139,25 @@ function renderChart(data) {
         })
         .on('click', function(event, d) {
             document.getElementById('search-bar').value = d.data.name;
+            const searchTerm = document.getElementById('search-bar').value.toLowerCase();
+
+            if (searchTerm === currentSearch) {
+                return;
+            }
             updateChart(); // Trigger the search and update the chart
+            d3.selectAll('#tooltip').style('display', 'none');
         });
 
     svg.selectAll('text')
         .data(root.descendants())
         .enter()
         .append('text')
-        .attr('x', d => d.x - (treeWidthAdjustment/2))
+        .attr('x', d => d.x - (treeWidthAdjustment / 2))
         .attr('y', d => d.y + 15 + padding)
         .attr('text-anchor', 'middle')
-        .attr('font-size',12)
+        .attr('font-size', 12)
         .attr('id', d => `text-${d.data.name.replace(/\s+/g, '-')}`)
-        .attr('class','sale-num')
+        .attr('class', 'sale-num')
         .text(d => `${d.data.sales}`);
 }
 

@@ -26,4 +26,5 @@ body {
 .sale-num {
     pointer-events: none;
     cursor: pointer;
+    user-select: none;
 }
