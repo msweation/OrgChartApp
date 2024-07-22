@@ -3,8 +3,14 @@ runtime: python39
 instance_class: F4
 
 env_variables:
-  DATABASE_URL: 'sqlite:////tmp/app.db'
-  GCS_BUCKET_NAME: 'org-chart-app-storage'
+  DB_USER: root
+  DB_PASS: ionsolar123
+  DB_NAME: OrgChart
+  DB_CONNECTION_NAME: new-database-416522:us-central1:org-chart-database
+  GCS_BUCKET_NAME: org-chart-app-storage
+
+beta_settings:
+  cloud_sql_instances: new-database-416522:us-central1:org-chart-database
 
 handlers:
 - url: /static
