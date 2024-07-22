@@ -1,6 +1,7 @@
 Flask
-Flask-SQLAlchemy
 Flask-Login
+Flask-SQLAlchemy
+gunicorn
 pandas
 google-cloud-bigquery
 db-dtypes
