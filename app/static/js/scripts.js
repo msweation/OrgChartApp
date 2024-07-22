@@ -1,6 +1,8 @@
 let currentSearch;
+let currentData;
 
 document.getElementById('search-button').addEventListener('click', () => {
+    //console.log('Current search: ',currentSearch);
     updateChart();
 });
 
@@ -55,10 +57,36 @@ document.getElementById('change-password-button').addEventListener('click', func
     window.location.href = '/auth/change_password';
 });
 
+$(document).ready(function() {
+    $.ajax({
+        url: '/get_names',
+        method: 'GET',
+        success: function(data) {
+            let nameSuggestions = data.map(item => ({
+                label: `${item[0]} (${item[1]} nodes)`,
+                value: item[0]
+            }));
+            
+            $('#search-bar').autocomplete({
+                source: nameSuggestions,
+                minLength: 2,
+                select: function(event, ui) {
+                    document.getElementById('search-bar').value = ui.item.value;
+                    $('#search-button').click();
+                }
+            });
+        },
+        error: function(xhr, status, error) {
+            console.error('Error fetching names:', error);
+        }
+    });
+});
+
 
 window.addEventListener('popstate', (event) => {
     if (event.state && event.state.searchTerm) {
         document.getElementById('search-bar').value = event.state.searchTerm;
+        currentSearch = event.state.searchTerm;
         const showInactive = document.getElementById('toggle-inactive').checked;
         fetch(`/get_org_chart?search=${event.state.searchTerm}&showInactive=${showInactive}`)
             .then(response => response.json())
@@ -75,6 +103,34 @@ window.addEventListener('popstate', (event) => {
             });
     }
 });
+
+window.addEventListener('resize', () => {
+    renderChart(currentData);
+});
+
+document.getElementById('download-button').addEventListener('click', () => {
+    const chartData = currentData; // Implement this function to get the current chart data
+    fetch('/download_csv', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(chartData)
+    })
+    .then(response => response.blob())
+    .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = 'recruit_and_recruiter.csv';
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+    })
+    .catch(error => console.error('Error downloading the CSV file:', error));
+});
+
 
 function updateChart() {
     const searchTerm = document.getElementById('search-bar').value.toLowerCase();
@@ -93,6 +149,7 @@ function updateChart() {
                 alert('No data found');
                 return;
             }
+            currentData = data;
             renderChart(data);
         })
         .catch(error => {
@@ -103,7 +160,7 @@ function updateChart() {
 
 function renderChart(data) {
     // Clear any existing chart
-    console.log('Attempting to load chart for data: ', data);
+    //console.log('Attempting to load chart for data: ', data);
     d3.select('#chart').html('');
 
     const width = document.getElementById('chart').clientWidth;
@@ -122,11 +179,11 @@ function renderChart(data) {
 
     const totalLevels = getNodeLevels(data);
 
-    console.log('Total node levels: ',totalLevels)
+    //console.log('Total node levels: ',totalLevels)
 
     const treeWidthAdjustment = (firstLevelChildren * 10) + 10;
 
-    console.log(firstLevelChildren);
+    //console.log(firstLevelChildren);
 
     const svg = d3.select('#chart').append('svg')
         .attr('width', width)

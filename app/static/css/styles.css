@@ -70,8 +70,6 @@ body {
     background-color: #ba4040;
     color: white;
     cursor: pointer;
-    position: absolute; /* Position it absolutely within the toolbar */
-    left: 5%; /* Position it 10px from the left edge */
 }
 
 #logout-button:hover {
@@ -86,8 +84,6 @@ body {
     background-color: #16959c;
     color: white;
     cursor: pointer;
-    position: absolute; /* Position it absolutely within the toolbar */
-    left: 25%; /* Position it 10px from the left edge */
 }
 
 #change-password-button:hover {
@@ -102,11 +98,23 @@ body {
     background-color: #28a745;
     color: white;
     cursor: pointer;
-    position: absolute; /* Position it absolutely within the toolbar */
-    right: 5%; /* Position it 10px from the right edge */
 }
 
 #refresh-button:hover {
+    background-color: #218838;
+}
+
+#download-button {
+    padding: 6px 12px;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    background-color: #28a745;
+    color: white;
+    cursor: pointer;
+}
+
+#download-button:hover {
     background-color: #218838;
 }
 
@@ -189,4 +197,38 @@ svg:active {
 #loader-overlay-text {
     font-size: 24px;
     margin-bottom: 20px;
+}
+
+/* Autocomplete styles */
+.ui-autocomplete {
+    position: absolute;
+    z-index: 1000;
+    cursor: default;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.ui-menu-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    color: #000;
+    padding: 0;
+    margin: 0;
+}
+
+.ui-menu-item:hover {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.ui-helper-hidden-accessible {
+    display: none;
 }

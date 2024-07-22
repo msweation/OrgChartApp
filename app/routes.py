@@ -1,10 +1,11 @@
 # routes.py
-from flask import request, jsonify, current_app as app, redirect, url_for, Response, render_template
+from flask import request, jsonify, current_app as app, redirect, url_for, Response, render_template,send_file
 from flask_login import login_required
 import pandas as pd
 import os
-from .utils import build_hierarchy, convert_booleans_to_strings, refresh_data
+from .utils import build_hierarchy, convert_booleans_to_strings, refresh_data,json_to_csv
 import json
+from google.cloud import storage
 
 def render_template_with_paths(template_name, **context):
     template_path = os.path.join(os.getcwd(), 'templates', template_name)
@@ -144,3 +145,43 @@ def get_org_chart():
 def refresh_data_route():
     result = refresh_data(app.config['UPLOAD_FOLDER'])
     return jsonify(result)
+
+@app.route('/get_names')
+@login_required
+def get_names():
+    json_filepath = os.path.join(app.config['UPLOAD_FOLDER'], 'org_chart.json')
+    with open(json_filepath, 'r') as json_file:
+        org_chart = json.load(json_file)
+    
+    def extract_names(node):
+        names = [(node['name'], count_nodes(node))]
+        for child in node.get('children', []):
+            names.extend(extract_names(child))
+        return names
+
+    def count_nodes(node):
+        count = 1  # count the current node
+        for child in node.get('children', []):
+            count += count_nodes(child)
+        return count
+
+    all_names = []
+    for root in org_chart.get('children', []):
+        #print(f"Root node: {root['name']}")
+        all_names.extend(extract_names(root))
+
+    #print(f"All names collected: {all_names}")
+    return jsonify(all_names)
+
+@app.route('/download_csv', methods=['POST'])
+@login_required
+def download_csv():
+    chart_data = request.json
+    if not chart_data:
+        return jsonify({"status": "error", "message": "No data provided"}), 400
+
+    # Create a temporary CSV file
+    temp_csv_filepath = '/tmp/recruit_and_recruiter.csv'
+    json_to_csv(chart_data, temp_csv_filepath)
+
+    return send_file(temp_csv_filepath, as_attachment=True, download_name='recruit_and_recruiter.csv')

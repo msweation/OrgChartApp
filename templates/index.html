@@ -6,6 +6,8 @@
     <title>Org Chart</title>
     <link rel="stylesheet" href="{{ css_path }}">
     <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 </head>
 <body>
     <div id="tool-bar">
@@ -19,6 +21,7 @@
             </label>
         </div>
         <button id="refresh-button" class="clickable">Refresh Data</button>
+        <button id="download-button" class="clickable">Download Data</button>
     </div>
     <div id="loader-overlay">
         <div id="loader-overlay-items">

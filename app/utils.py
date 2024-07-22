@@ -61,3 +61,31 @@ def convert_booleans_to_strings(d):
         return str(d).lower()
     else:
         return d
+    
+
+def extract_data(node, parent_name=None, data_list=[]):
+    # Extract the current node's data
+    data = {
+        'Name': node.get('name'),
+        'Parent': parent_name,
+        'Active': node.get('active', None),
+        'Sales': node.get('sales', 0)
+    }
+    data_list.append(data)
+    
+    # Recursively extract data for each child node
+    for child in node.get('children', []):
+        extract_data(child, node.get('name'), data_list)
+    
+    return data_list
+
+def json_to_csv(json_data, temp_csv_filepath):
+    root = json_data if 'children' in json_data else json_data['children'][0]
+    data_list = extract_data(root)
+
+    # Create a DataFrame from the extracted data
+    df = pd.DataFrame(data_list)
+
+    # Save the DataFrame to a CSV file
+    df.to_csv(temp_csv_filepath, index=False)
+    return temp_csv_filepath
