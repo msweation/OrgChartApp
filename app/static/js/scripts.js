@@ -21,6 +21,20 @@ document.getElementById('toggle-inactive').addEventListener('change', () => {
     updateChart();
 });
 
+document.getElementById('get-parent-button').addEventListener('click', () => {
+    const currentNode = currentData.name;
+    const parentName = currentData.parent;
+    //console.log(parentName);
+
+    if (parentName) {
+        document.getElementById('search-bar').value = parentName;
+        updateChart();
+    } else {
+        alert('No parent found for: ',currentNode);
+        return;
+    }    
+});
+
 document.getElementById('refresh-button').addEventListener('click', () => {
     document.getElementById('loader-overlay').style.display = 'flex';
     fetch('/refresh_data')
@@ -149,7 +163,6 @@ function updateChart() {
                 alert('No data found');
                 return;
             }
-            currentData = data;
             renderChart(data);
         })
         .catch(error => {
@@ -159,6 +172,7 @@ function updateChart() {
 }
 
 function renderChart(data) {
+    currentData = data;
     // Clear any existing chart
     //console.log('Attempting to load chart for data: ', data);
     d3.select('#chart').html('');

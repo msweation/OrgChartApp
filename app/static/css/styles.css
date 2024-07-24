@@ -104,6 +104,20 @@ body {
     background-color: #218838;
 }
 
+#get-parent-button {
+    padding: 6px 12px;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    background-color: #787878;
+    color: white;
+    cursor: pointer;
+}
+
+#get-parent-button:hover {
+    background-color: #515151;
+}
+
 #download-button {
     padding: 6px 12px;
     font-size: 16px;

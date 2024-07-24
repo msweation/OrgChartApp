@@ -40,9 +40,22 @@ def build_hierarchy(df):
         if not row.empty:
             active_status = row['Recruit_Active'].iloc[0]
             sales = int(row['Total_Sales'].iloc[0])
-            hierarchy[name] = {'name': name, 'children': [], 'active': bool(active_status), 'sales': sales}
+            parent_name = row['Recruiter'].iloc[0] if pd.notna(row['Recruiter'].iloc[0]) else None
+            hierarchy[name] = {
+                'name': name,
+                'children': [],
+                'active': bool(active_status),
+                'sales': sales,
+                'parent': parent_name
+            }
         else:
-            hierarchy[name] = {'name': name, 'children': [], 'active': None, 'sales': 0}
+            hierarchy[name] = {
+                'name': name,
+                'children': [],
+                'active': None,
+                'sales': 0,
+                'parent': None
+            }
 
     for _, row in df.iterrows():
         recruit, recruiter = row['Recruit'], row['Recruiter']

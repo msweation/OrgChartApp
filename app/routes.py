@@ -102,7 +102,7 @@ def get_org_chart():
         def filter_chart(n):
             is_active = n['active'] if isinstance(n['active'], bool) else n['active'].lower() == 'true'
             if not show_inactive and not is_active:
-                print(f"Excluding inactive node: {n['name']}")
+                #print(f"Excluding inactive node: {n['name']}")
                 return False
             return True
 
@@ -119,11 +119,11 @@ def get_org_chart():
     for root in org_chart['children']:
         target_node = find_node(root, search)
         if target_node:
-            print(f"Found node")
+            #print(f"Found node")
             
             filtered_chart = filter_hierarchy(target_node)
             if not filtered_chart:
-                print("No data found after filtering")
+                #print("No data found after filtering")
                 return jsonify(None)
             
             def count_nodes(node):
@@ -133,11 +133,11 @@ def get_org_chart():
                 return count
             
             node_count = count_nodes(filtered_chart) - 1  # Exclude the searched node itself
-            print(f"Number of nodes attached to the searched node: {node_count}")
+            #print(f"Number of nodes attached to the searched node: {node_count}")
             
             return jsonify(filtered_chart)
 
-    print("No matching node found")
+    #print("No matching node found")
     return jsonify(None)
 
 @app.route('/refresh_data')
