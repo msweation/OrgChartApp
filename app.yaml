@@ -2,6 +2,11 @@ runtime: python39
 
 instance_class: F4
 
+env_variables:
+  SECRET_KEY: 'your-secret-key'
+  SQLALCHEMY_DATABASE_URI: 'mysql+pymysql://orgchartapp:IonSolar123@/OrgChart?unix_socket=/cloudsql/new-database-416522:us-central1:org-chart-database'
+  GCS_BUCKET_NAME: 'org-chart-app-storage'
+
 handlers:
 - url: /static
   static_dir: app/static

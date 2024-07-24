@@ -7,3 +7,5 @@ google-cloud-bigquery
 db-dtypes
 google-cloud-bigquery-storage
 google-cloud-storage
+pymysql
+SQLAlchemy

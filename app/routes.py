@@ -3,7 +3,7 @@ from flask import request, jsonify, current_app as app, redirect, url_for, Respo
 from flask_login import login_required
 import pandas as pd
 import os
-from .utils import build_hierarchy, convert_booleans_to_strings, refresh_data,json_to_csv
+from .utils import build_hierarchy, convert_booleans_to_strings, refresh_data,json_to_csv,load_local_json
 import json
 from google.cloud import storage
 
@@ -55,22 +55,6 @@ def upload_file():
         
         return redirect(url_for('view_json'))
 
-@app.route('/view_json')
-@login_required
-def view_json():
-    view_json_path = os.path.join(os.getcwd(), 'templates', 'view_json.html')
-    json_filepath = os.path.join(app.config['UPLOAD_FOLDER'], 'org_chart.json')
-    try:
-        with open(json_filepath, 'r') as json_file:
-            json_data = json.load(json_file)
-        with open(view_json_path) as file:
-            content = file.read()
-        content = content.replace("{{ json_data | tojson(indent=4) }}", json.dumps(json_data, indent=4))
-        return Response(content, mimetype='text/html')
-    except Exception as e:
-        print(f"Error rendering view_json.html: {e}")
-        return str(e)
-
 @app.route('/get_org_chart')
 @login_required
 def get_org_chart():
@@ -80,9 +64,8 @@ def get_org_chart():
     print(f"Search term: {search}")
     print(f"Show inactive: {show_inactive}")
     
-    json_filepath = os.path.join(app.config['UPLOAD_FOLDER'], 'org_chart.json')
-    with open(json_filepath, 'r') as json_file:
-        org_chart = json.load(json_file)
+    json_filepath = app.config['LOCAL_JSON_PATH']
+    org_chart = load_local_json(json_filepath)
     
     print(f"Org chart loaded")
     
@@ -143,15 +126,14 @@ def get_org_chart():
 @app.route('/refresh_data')
 @login_required
 def refresh_data_route():
-    result = refresh_data(app.config['UPLOAD_FOLDER'])
+    result = refresh_data()
     return jsonify(result)
 
 @app.route('/get_names')
 @login_required
 def get_names():
-    json_filepath = os.path.join(app.config['UPLOAD_FOLDER'], 'org_chart.json')
-    with open(json_filepath, 'r') as json_file:
-        org_chart = json.load(json_file)
+    json_filepath = app.config['LOCAL_JSON_PATH']
+    org_chart = load_local_json(json_filepath)
     
     def extract_names(node):
         names = [(node['name'], count_nodes(node))]
@@ -179,9 +161,20 @@ def download_csv():
     chart_data = request.json
     if not chart_data:
         return jsonify({"status": "error", "message": "No data provided"}), 400
+    
+    print('Attemping to download data:')
+    print(chart_data)
 
     # Create a temporary CSV file
     temp_csv_filepath = '/tmp/recruit_and_recruiter.csv'
+
+    if os.path.exists(temp_csv_filepath):
+        try:
+            os.remove(temp_csv_filepath)
+            print('File exists already, removing duplicate.')
+        except Exception as e:
+            return jsonify({"status": "error", "message": f"Error deleting existing file: {e}"}), 500
+
     json_to_csv(chart_data, temp_csv_filepath)
 
     return send_file(temp_csv_filepath, as_attachment=True, download_name='recruit_and_recruiter.csv')

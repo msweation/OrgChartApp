@@ -1,9 +1,9 @@
-from google.cloud import bigquery
+from google.cloud import bigquery, storage
 import pandas as pd
 import os
 import json
 
-def refresh_data(upload_folder):
+def refresh_data():
     try:
         # Query the BigQuery database
         client = bigquery.Client()
@@ -14,16 +14,22 @@ def refresh_data(upload_folder):
         df = client.query(query).to_dataframe()
 
         # Save the DataFrame as a CSV file
-        filepath = os.path.join(upload_folder, 'recruit_and_recruiter.csv')
+        filepath = '/tmp/recruit_and_recruiter.csv'
         df.to_csv(filepath, index=False)
+
+        # Upload CSV to GCS
+        upload_to_gcs(filepath, 'recruit_and_recruiter.csv')
 
         # Build the hierarchy and save it as JSON
         hierarchy = build_hierarchy(df)
         hierarchy = convert_booleans_to_strings(hierarchy)
         
-        json_filepath = os.path.join(upload_folder, 'org_chart.json')
+        json_filepath = '/tmp/org_chart.json'
         with open(json_filepath, 'w') as json_file:
             json.dump(hierarchy, json_file, indent=4)
+
+        # Upload JSON to GCS
+        upload_to_gcs(json_filepath, 'org_chart.json')
         
         return {'success': True}
     except Exception as e:
@@ -102,3 +108,21 @@ def json_to_csv(json_data, temp_csv_filepath):
     # Save the DataFrame to a CSV file
     df.to_csv(temp_csv_filepath, index=False)
     return temp_csv_filepath
+
+def upload_to_gcs(source_file, destination_blob):
+    bucket_name = os.environ.get('GCS_BUCKET_NAME')
+    client = storage.Client()
+    bucket = client.get_bucket(bucket_name)
+    blob = bucket.blob(destination_blob)
+    blob.upload_from_filename(source_file)
+
+def download_from_gcs(blob_name, destination_file):
+    bucket_name = os.environ.get('GCS_BUCKET_NAME')
+    client = storage.Client()
+    bucket = client.get_bucket(bucket_name)
+    blob = bucket.blob(blob_name)
+    blob.download_to_filename(destination_file)
+
+def load_local_json(filepath):
+    with open(filepath, 'r') as json_file:
+        return json.load(json_file)

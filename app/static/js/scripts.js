@@ -24,13 +24,13 @@ document.getElementById('toggle-inactive').addEventListener('change', () => {
 document.getElementById('get-parent-button').addEventListener('click', () => {
     const currentNode = currentData.name;
     const parentName = currentData.parent;
-    //console.log(parentName);
+    console.log(currentNode);
 
     if (parentName) {
         document.getElementById('search-bar').value = parentName;
         updateChart();
     } else {
-        alert('No parent found for: ',currentNode);
+        alert('No parent found for: ' + JSON.stringify(currentNode));
         return;
     }    
 });
@@ -124,6 +124,7 @@ window.addEventListener('resize', () => {
 
 document.getElementById('download-button').addEventListener('click', () => {
     const chartData = currentData; // Implement this function to get the current chart data
+    console.log('Attempting to download data: ',chartData)
     fetch('/download_csv', {
         method: 'POST',
         headers: {

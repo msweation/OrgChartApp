@@ -6,8 +6,8 @@ app = create_app()
 
 with app.app_context():
     # Create a new user
-    username = "test"
-    password = "test"
+    username = "adamwebb"
+    password = "ionsolar123"
     
     # Check if the user already exists
     existing_user = User.query.filter_by(username=username).first()
