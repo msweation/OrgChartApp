@@ -35,25 +35,6 @@ document.getElementById('get-parent-button').addEventListener('click', () => {
     }    
 });
 
-document.getElementById('refresh-button').addEventListener('click', () => {
-    document.getElementById('loader-overlay').style.display = 'flex';
-    fetch('/refresh_data')
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('loader-overlay').style.display= 'none';
-            if (data.success) {
-                console.log('Data refreshed successfully');
-            } else {
-                alert('Error refreshing data');
-            }
-        })
-        .catch(error => {
-            dodocument.getElementById('loader-overlay').style.display = 'none';
-            console.error('Error refreshing data:', error);
-            alert('An error occurred while refreshing the data.');
-        });
-});
-
 document.getElementById('logout-button').addEventListener('click', function() {
     fetch('/auth/logout', {
         method: 'POST',

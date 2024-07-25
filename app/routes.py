@@ -123,7 +123,7 @@ def get_org_chart():
     #print("No matching node found")
     return jsonify(None)
 
-@app.route('/refresh_data')
+@app.route('/refresh_data', methods=['POST'])
 def refresh_data_route():
     result = refresh_data()
     return jsonify(result)
