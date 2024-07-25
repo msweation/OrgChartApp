@@ -124,7 +124,6 @@ def get_org_chart():
     return jsonify(None)
 
 @app.route('/refresh_data')
-@login_required
 def refresh_data_route():
     result = refresh_data()
     return jsonify(result)
